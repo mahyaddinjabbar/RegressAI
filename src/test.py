@@ -7,7 +7,7 @@ import time
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
 # Open the website
-driver.get("https://www.bolt.com")
+driver.get("https://www.google.com")
 
 # Wait for a few seconds to let the page load
 time.sleep(3)
