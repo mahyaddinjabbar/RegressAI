@@ -2,7 +2,7 @@ import os
 from openai import OpenAI
 
 # Initialize OpenAI client with API key from environment variable
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("secrets.OPENAI_API_KEY"))
 
 # Read the XML layout file
 with open("app_code/activity_login.xml", "r", encoding="utf-8") as xml_file:
