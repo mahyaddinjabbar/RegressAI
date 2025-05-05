@@ -1,0 +1,35 @@
+name: Generate Regression Tests
+
+on:
+  workflow_dispatch:  # allows manual trigger
+
+jobs:
+  generate-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout RegressAI repo
+        uses: actions/checkout@v3
+
+      - name: Checkout Eventhub repo
+        uses: actions/checkout@v3
+        with:
+          repository: mahyaddinjabbar/Eventhub
+          path: app-source
+          token: ${{ secrets.EVENTHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install openai
+
+      - name: Run AI Test Generator
+        run: |
+          python src/main/ai_script_generator.py \
+            app-source/app/src/main/res/layout/activity_login.xml \
+            app-source/app/src/main/java/com/example/LoginActivity.kt
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
