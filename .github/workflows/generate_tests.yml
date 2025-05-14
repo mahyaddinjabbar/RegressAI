@@ -2,6 +2,9 @@ name: Generate Regression Tests
 
 on:
   workflow_dispatch:  # allows manual triggering
+  push:               # triggers when something is pushed
+    branches:
+      - main
 
 jobs:
   generate-tests:
