@@ -1,15 +1,19 @@
 import os
+import sys
 from openai import OpenAI
+
+xml_path = sys.argv[1]
+kt_path = sys.argv[2]
 
 # Initialize OpenAI client with API key from environment variable.
 client = OpenAI(api_key=os.getenv("secrets.OPENAI_API_KEY"))
 
 # Read the XML layout file
-with open("app_code/activity_login.xml", "r", encoding="utf-8") as xml_file:
+with open(xml_path, "r", encoding="utf-8") as xml_file:
     xml_content = xml_file.read()
 
 # Read the Android activity Java file
-with open("app_code/LoginActivity.java", "r", encoding="utf-8") as java_file:
+with open(kt_path, "r", encoding="utf-8") as java_file:
     activity_content = java_file.read()
 
 # Construct the prompt
