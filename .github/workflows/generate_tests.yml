@@ -1,7 +1,7 @@
 name: Generate Regression Tests
 
 on:
-  workflow_dispatch:  # allows manual trigger
+  workflow_dispatch:  # allows manual triggering
 
 jobs:
   generate-tests:

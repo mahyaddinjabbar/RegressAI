@@ -20,7 +20,7 @@ Below is an Android activity implementation in kotlin and its corresponding XML 
 Requirements: 
 -Testcases should be ready to execute, 
 -They should cover all the possible cases
--Include meaningful comments
+-Include meaningful comments as well
 
 Activity file content:
 {activity_content}
