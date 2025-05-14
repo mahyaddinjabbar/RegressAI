@@ -18,10 +18,11 @@ with open(kt_path, "r", encoding="utf-8") as kt_file:
 
 # Construct the prompt
 prompt = f"""
-Below is an Android activity implementation in Kotlin and its corresponding XML layout file. Using these files, generate test cases for regression testing.
+Using these files, generate test cases for regression testing.
 
 Requirements:
 - Test cases should be ready to execute
+- Output should contain only the code, no additional text
 - They should cover all the possible cases
 - Include meaningful comments as well
 
