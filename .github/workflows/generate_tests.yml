@@ -36,3 +36,8 @@ jobs:
             app-source/app/src/main/java/com/mahyaddin/my_app/presentation/login/LoginActivity.kt
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Upload generated tests
+        uses: actions/upload-artifact@v3
+        with:
+          name: ai-generated-tests
+          path: generated_tests.robot
