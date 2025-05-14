@@ -32,7 +32,7 @@ jobs:
       - name: Run AI Test Generator
         run: |
           python src/main/ai_script_generator.py \
-            app/src/main/res/layout/activity_login.xml \
-            app/src/main/java/com/mahyaddin/my_app/presentation/login/LoginActivity.kt
+            app-source/app/src/main/res/layout/activity_login.xml \
+            app-source/app/src/main/java/com/mahyaddin/my_app/presentation/login/LoginActivity.kt
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
