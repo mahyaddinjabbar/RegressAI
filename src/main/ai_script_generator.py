@@ -18,20 +18,30 @@ with open(kt_path, "r", encoding="utf-8") as kt_file:
 
 # the prompt
 prompt = f"""
-Using these files, generate test cases for regression testing.
+You are an expert Android QA automation engineer.
 
-Requirements:
-- Test cases should be ready to execute
-- Output should contain only the code, no additional text
-- They should cover all the possible cases
-- Include meaningful comments as well
+Using the following Android Activity and its XML layout file, generate comprehensive **Kotlin test cases** for regression testing using the **Espresso framework**.
 
-Activity file content:
+### Requirements:
+- The test cases must be executable Kotlin code using JUnit4 and Espresso
+- Use AndroidX imports
+- Cover **all critical UI interactions and edge cases** for this screen
+- Include tests for **UI visibility, click actions, navigation, input validation, and dynamic content** (if applicable)
+- Include **meaningful and concise comments** to describe each test
+- Output should contain **only the Kotlin code**, no explanation or surrounding text
+
+
+### Bonus:
+- If the Activity includes form inputs or buttons, test both valid and invalid inputs
+- If the Activity navigates to another screen, include intent validation
+
+### Activity file content:
 {activity_content}
 
-XML Layout file content:
+### XML Layout file content:
 {xml_content}
 """
+
 # Sending the prompt to OpenAI
 response = client.chat.completions.create(
     model="gpt-4",
