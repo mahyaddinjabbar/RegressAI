@@ -2,6 +2,7 @@ name: Generate Regression Tests
 
 on:
   workflow_dispatch:
+  repository_dispatch:
   push:
     branches:
       - main
@@ -29,41 +30,16 @@ jobs:
       - name: Install dependencies
         run: pip install openai
 
-      - name: Detect modified files
-        id: changes
-        run: |
-          cd app-source
-          echo "::set-output name=changed_files::$(git diff --name-only HEAD^ HEAD)"
-
-      - name: Extract relevant file paths
-        id: paths
-        run: |
-          changed_files="${{ steps.changes.outputs.changed_files }}"
-
-          activity_file=""
-          layout_file=""
-
-          while read file; do
-            if [[ "$file" == *".kt"* && "$file" == *"presentation"* ]]; then
-              activity_file="$file"
-            elif [[ "$file" == *".xml"* && "$file" == *"res/layout"* ]]; then
-              layout_file="$file"
-            fi
-          done <<< "$changed_files"
-
-          echo "Using $activity_file and $layout_file"
-
-          echo "::set-output name=kt::$activity_file"
-          echo "::set-output name=xml::$layout_file"
         shell: bash
 
       - name: Run AI Test Generator
         run: |
           python src/main/ai_script_generator.py \
-            app-source/${{ steps.paths.outputs.xml }} \
-            app-source/${{ steps.paths.outputs.kt }}
+            app-source/${{ github.event.client_payload.xml_file }} \
+            app-source/${{ github.event.client_payload.kt_file }}
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
 
       - name: Upload generated tests
         uses: actions/upload-artifact@v4
@@ -71,11 +47,13 @@ jobs:
           name: ai-generated-tests
           path: generated_tests.kt
 
-      - name: Get Activity name from path
+      - name: Get Activity name from payload path
         id: activity
         run: |
-          ACTIVITY_NAME=$(basename "${{ github.event.head_commit.modified[0] }}" .kt)
+          KT_PATH="${{ github.event.client_payload.kt_file }}"
+          ACTIVITY_NAME=$(basename "$KT_PATH" .kt)
           echo "ACTIVITY_NAME=$ACTIVITY_NAME" >> $GITHUB_OUTPUT
+
 
       - name: Move test file into EventHub androidTest folder
         run: |
