@@ -23,17 +23,12 @@ You are an expert Android QA automation engineer.
 Using the following Android Activity and its XML layout file, generate comprehensive **Kotlin test cases** for regression testing using the **Espresso framework**.
 
 ### Requirements:
-- The test cases must be executable Kotlin code using JUnit4 and Espresso
+- The test cases must be executable Kotlin code using Espresso
 - Use AndroidX imports
-- Cover **all critical UI interactions and edge cases** for this screen
-- Include tests for **UI visibility, click actions, navigation, input validation, and dynamic content** (if applicable)
-- Include **meaningful and concise comments** to describe each test
-- Output should contain **only the Kotlin code**, no explanation or surrounding text
-
-
-### Bonus:
-- If the Activity includes form inputs or buttons, test both valid and invalid inputs
-- If the Activity navigates to another screen, include intent validation
+- Cover all critical UI interactions and edge cases
+- Include tests for UI visibility, click actions, navigation, input validation, and dynamic content
+- Include meaningful and concise comments
+- Output should contain only the Kotlin code
 
 ### Activity file content:
 {activity_content}
