@@ -5,18 +5,18 @@ from openai import OpenAI
 xml_path = sys.argv[1]
 kt_path = sys.argv[2]
 
-# Initialize OpenAI client with API key from environment variable.
+# OpenAI client with API key from environment variable.
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Read the XML layout file
+# read XML layout file
 with open(xml_path, "r", encoding="utf-8") as xml_file:
     xml_content = xml_file.read()
 
-# Read the Kotlin activity file
+# read Kotlin activity file
 with open(kt_path, "r", encoding="utf-8") as kt_file:
     activity_content = kt_file.read()
 
-# Construct the prompt
+# the prompt
 prompt = f"""
 Using these files, generate test cases for regression testing.
 
@@ -32,8 +32,7 @@ Activity file content:
 XML Layout file content:
 {xml_content}
 """
-
-# Send the prompt to OpenAI
+# Sending the prompt to OpenAI
 response = client.chat.completions.create(
     model="gpt-4",
     messages=[
