@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: mahyaddinjabbar/Eventhub
-          path: app-source
+          path: app-source # This is where the EventHub repo will be cloned
           token: ${{ secrets.EVENTHUB_TOKEN }}
 
       - name: Set up Python
@@ -27,43 +27,97 @@ jobs:
 
       - name: Install dependencies
         run: pip install openai
-
         shell: bash
 
       - name: Run AI Test Generator
         run: |
-          python src/main/ai_script_generator.py \
-            app-source/${{ github.event.client_payload.xml_file }} \
-            app-source/${{ github.event.client_payload.kt_file }}
+          KT_FILE_PAYLOAD="${{ github.event.client_payload.kt_file }}"
+          XML_FILE_PAYLOAD="${{ github.event.client_payload.xml_file }}"
+
+          echo "Received KT file payload: $KT_FILE_PAYLOAD"
+          echo "Received XML file payload: $XML_FILE_PAYLOAD"
+
+          # Check if both files are placeholders, if so, exit gracefully
+          if [[ "$KT_FILE_PAYLOAD" == "no_kt_file_found" && "$XML_FILE_PAYLOAD" == "no_xml_file_found" ]]; then
+            echo "Neither a relevant .kt nor an .xml file was found in the EventHub payload. Skipping test generation."
+            exit 0 # Exit successfully, as there's nothing to process
+          fi
+
+          # Construct arguments for the AI script based on what files were actually found
+          AI_SCRIPT_ARGS=""
+          if [[ "$XML_FILE_PAYLOAD" != "no_xml_file_found" ]]; then
+            # Ensure the path is relative to the 'app-source' directory
+            AI_SCRIPT_ARGS+=" app-source/$XML_FILE_PAYLOAD"
+          else
+            echo "XML file not found in payload, skipping XML argument."
+          fi
+
+          if [[ "$KT_FILE_PAYLOAD" != "no_kt_file_found" ]]; then
+            # Ensure the path is relative to the 'app-source' directory
+            AI_SCRIPT_ARGS+=" app-source/$KT_FILE_PAYLOAD"
+          else
+            echo "KT file not found in payload, skipping KT argument."
+          fi
+
+          echo "Running AI script with arguments: python src/main/ai_script_generator.py $AI_SCRIPT_ARGS"
+          python src/main/ai_script_generator.py $AI_SCRIPT_ARGS
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
 
       - name: Upload generated tests
         uses: actions/upload-artifact@v4
         with:
           name: ai-generated-tests
-          path: generated_tests.kt
+          path: generated_tests.kt # Ensure your python script outputs to this exact file name
 
       - name: Get Activity name from payload path
         id: activity
         run: |
-          KT_PATH="${{ github.event.client_payload.kt_file }}"
-          ACTIVITY_NAME=$(basename "$KT_PATH" .kt)
-          echo "ACTIVITY_NAME=$ACTIVITY_NAME" >> $GITHUB_OUTPUT
+          KT_PATH_FROM_PAYLOAD="${{ github.event.client_payload.kt_file }}"
+          echo "KT path from payload for activity name: $KT_PATH_FROM_PAYLOAD"
 
+          # Determine Activity name only if a valid KT file path was provided
+          if [[ "$KT_PATH_FROM_PAYLOAD" != "no_kt_file_found" ]]; then
+            ACTIVITY_NAME=$(basename "$KT_PATH_FROM_PAYLOAD" .kt)
+            echo "ACTIVITY_NAME=$ACTIVITY_NAME" >> $GITHUB_OUTPUT
+          else
+            # If no KT file, use a default activity name or handle as an error
+            echo "No KT file provided in payload; using default activity name for test file."
+            echo "ACTIVITY_NAME=DefaultTest" >> $GITHUB_OUTPUT # Fallback name
+          fi
 
       - name: Move test file into EventHub androidTest folder
         run: |
-          mkdir -p app-source/app/src/androidTest/java/com/mahyaddin/my_app/
-          mv *.kt app-source/app/src/androidTest/java/com/mahyaddin/my_app/${{ steps.activity.outputs.ACTIVITY_NAME }}Test.kt
+          # Use the activity name determined in the previous step
+          ACTIVITY_NAME_OUTPUT="${{ steps.activity.outputs.ACTIVITY_NAME }}"
+          DEST_DIR="app-source/app/src/androidTest/java/com/mahyaddin/my_app/"
+          DEST_FILE="${DEST_DIR}${ACTIVITY_NAME_OUTPUT}Test.kt"
+
+          mkdir -p "$DEST_DIR"
+          
+          # Check if generated_tests.kt exists before moving
+          if [[ -f generated_tests.kt ]]; then
+            mv generated_tests.kt "$DEST_FILE"
+            echo "Moved generated_tests.kt to $DEST_FILE"
+          else
+            echo "Error: generated_tests.kt not found after AI test generation. Skipping move."
+            exit 1 # Fail this step if the file is missing
+          fi
+
 
       - name: Commit and push test to EventHub
         run: |
           cd app-source
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add app/src/androidTest/java/com/mahyaddin/my_app/
-          git commit -m "Add AI-generated regression test for ${{ steps.activity.outputs.ACTIVITY_NAME }}"
-          git push origin master
-
+          git config user.name "github-actions[bot]" # Recommended for actions pushing commits
+          git config user.email "github-actions[bot]@users.noreply.github.com" # Recommended for actions pushing commits
+          
+          # Check if there are changes to commit before trying to add and commit
+          if git diff --quiet --exit-code app/src/androidTest/java/com/mahyaddin/my_app/; then
+            echo "No changes detected in app/src/androidTest/java/com/mahyaddin/my_app/. Skipping commit."
+          else
+            git add app/src/androidTest/java/com/mahyaddin/my_app/
+            git commit -m "Add AI-generated regression test for ${{ steps.activity.outputs.ACTIVITY_NAME }}"
+            # Use 'main' or 'master' depending on your default branch name for EventHub
+            git push origin master
+            echo "Committed and pushed AI-generated test."
+          fi
