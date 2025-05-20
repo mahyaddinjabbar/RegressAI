@@ -64,7 +64,7 @@ response = client.chat.completions.create(
 generated_test_cases = response.choices[0].message.content
 
 # Save test cases to file
-with open(test_file_name, "w", encoding="utf-8") as output_file:
+with open("generated_tests.kt", "w", encoding="utf-8") as output_file:
     output_file.write(generated_test_cases)
 
 print(f"✅ Test cases saved to: {test_file_name}")
