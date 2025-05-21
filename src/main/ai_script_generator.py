@@ -32,23 +32,21 @@ with open(kt_path, "r", encoding="utf-8") as kt_file:
 
 # Prompt for GPT
 prompt = f"""
-You are an expert Android QA automation engineer.
 
-Using the following Android Activity and its XML layout file, generate comprehensive **Kotlin test cases** for regression testing using the **Espresso framework**.
+Below is an Android activity implementation in kotlin and its corresponding XML layout file. Using these files, generate testcases for regression testing.
 
-### Requirements:
-- The test cases must be executable Kotlin code using Espresso
-- Use AndroidX imports
-- Cover all critical UI interactions and edge cases
-- Include tests for UI visibility, click actions, navigation, input validation, and dynamic content
-- Include meaningful and concise comments
-- Output should contain only the Kotlin code
+Requirements: 
+-Testcases should be ready to execute, 
+-They should cover all the possible cases
+-Include meaningful comments as well
 
-### Activity file content:
+Activity file content:
 {activity_content}
 
-### XML Layout file content:
+
+XML Layout file content: 
 {xml_content}
+
 """
 
 # Request GPT to generate test cases
