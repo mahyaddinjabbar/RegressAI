@@ -34,15 +34,24 @@ with open(kt_path, "r", encoding="utf-8") as kt_file:
 prompt = f"""
 You are an expert Android QA automation engineer.
 
-Using the following Android Activity and its XML layout file, generate comprehensive **Kotlin test cases** for regression testing using the **Espresso framework**.
+Using the following Android Activity and its XML layout file, generate comprehensive Kotlin test cases using the Espresso framework with AndroidX.
 
 ### Requirements:
-- The test cases must be executable Kotlin code using Espresso
-- Use AndroidX imports
-- Cover all critical UI interactions and edge cases
-- Include tests for UI visibility, click actions, navigation, input validation, and dynamic content
-- Include meaningful and concise comments
-- Output should contain only the Kotlin code
+- Must be valid and executable Kotlin test code using Espresso
+- Cover all UI elements and possible user interactions (clicks, typing, swipes)
+- Include:
+  - UI visibility and presence
+  - Click interactions
+  - Input validation (positive and negative inputs)
+  - Navigation and intents
+  - State preservation (e.g., rotation, background/foreground transitions)
+  - Edge and boundary cases (e.g., empty input, very long strings)
+  - Error scenarios (e.g., network failure UI state if applicable)
+  - Accessibility checks (e.g., content description presence)
+- Use @Before, @Test, and @After annotations correctly
+- Add meaningful inline comments
+- Use Espresso best practices (e.g., IdlingResource for async, `ActivityScenario`)
+- Output only the Kotlin code, no explanations
 
 ### Activity file content:
 {activity_content}
