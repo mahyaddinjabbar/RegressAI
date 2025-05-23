@@ -38,7 +38,8 @@ Using the following Android Activity and its XML layout file, generate comprehen
 
 ### Requirements:
 - Must be valid and executable Kotlin test code using Espresso
-- Cover all UI elements and possible user interactions (clicks, typing, swipes)
+- Do NOT include test cases for RecyclerView or its interactions
+- Cover all remaining UI elements and possible user interactions (clicks, typing, swipes)
 - Include:
   - UI visibility and presence
   - Click interactions
@@ -50,7 +51,8 @@ Using the following Android Activity and its XML layout file, generate comprehen
   - Accessibility checks (e.g., content description presence)
 - Use @Before, @Test, and @After annotations correctly
 - Add meaningful inline comments
-- Use Espresso best practices (e.g., IdlingResource for async, `ActivityScenario`)
+- Use Espresso best practices (e.g., IdlingResource for async, ActivityScenario)
+- If any dependencies (e.g., for Espresso, Espresso Intents, ActivityScenario) are required but not found in the project, list them at the top in Gradle syntax
 - Output only the Kotlin code, no explanations
 
 ### Activity file content:
